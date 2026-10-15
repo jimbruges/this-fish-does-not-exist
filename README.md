@@ -91,8 +91,21 @@ Slicer screenshots: [front plate](3d-print/print-settings/front-plate.png), [rea
 
 1. On this GitHub page, click **Code → Download ZIP** to download the repo as a `.zip` file.
 2. In Arduino App Lab, click **Create new app → Import App**.
+
+   <img src="images/app-lab-1-import-menu.png" alt="App Lab Create new app menu with Import App highlighted" width="300">
+
 3. Drag the `.zip` file into the import window (or click **Import from computer**). The app is added to your workspace with its files, Bricks and libraries.
+
+   <img src="images/app-lab-2-import-dialog.png" alt="App Lab Import an App dialog" width="450">
+
+   Once imported, the app appears in your list:
+
+   <img src="images/app-lab-3-imported-app.png" alt="This Fish Does Not Exist app card in App Lab" width="300">
+
 4. Open the app, click the arrow next to its name and switch on **Run at startup**, so it runs every time the UNO Q is powered.
+
+   <img src="images/app-lab-4-run-at-startup.png" alt="App Lab app menu with Run at startup switched on" width="450">
+
 5. Run the app. Open the web UI on port 7000 to pick the layout (`page` for the portrait frame) and the generation interval.
 
 The app saves its settings and fish count to `.fishclock_state.json` on the device, so it picks up where it left off after a restart.
