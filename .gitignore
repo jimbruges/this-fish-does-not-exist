@@ -7,3 +7,9 @@ __pycache__/
 
 # Runtime state saved by the app on the device
 .fishclock_state.json
+
+# macOS
+.DS_Store
+
+# Full-resolution photos (resized copies live in images/)
+_originals/
