@@ -67,6 +67,24 @@ async function refresh() {
   }
 }
 
+// don't stomp on a textarea the user is selecting text in
+function setArea(id, value) {
+  const el = $(id);
+  if (document.activeElement !== el && el.value !== value) el.value = value;
+}
+
+async function refreshLlm() {
+  try {
+    const l = await api("GET", "/llm");
+    setArea("llm_prompt", l.prompt || "");
+    setArea("llm_raw", l.raw || "");
+    setArea("llm_text", l.text || "");
+    $("src2").textContent = l.source || "—";
+    $("src2").className = "pill" + (l.source === "llm" ? " ready" : "");
+    $("llmerr").textContent = l.error ? " " + l.error : "";
+  } catch (e) { /* ignore */ }
+}
+
 $("generate").onclick = () => api("POST", "/generate").then(refresh);
 $("save").onclick = async () => {
   fillSettings(await api("POST", "/settings", readSettings()));
@@ -77,7 +95,9 @@ $("save").onclick = async () => {
 loadTimezones();
 api("GET", "/settings").then(fillSettings);
 refresh();
+refreshLlm();
 setInterval(refresh, 1000);
+setInterval(refreshLlm, 3000);
 // keep the clock preview honest without re-reading the whole form
 setInterval(async () => {
   try {

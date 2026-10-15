@@ -521,6 +521,11 @@ def api_get_settings():
         return out
 
 
+def api_llm():
+    """Prompt sent to the model and its raw reply, for inspection in the UI."""
+    return description.last_exchange()
+
+
 def api_timezones():
     """IANA zones the board knows about, for the settings picker."""
     try:
@@ -575,6 +580,7 @@ def api_generate():
 web_ui.expose_api("GET", "/status", api_status)
 web_ui.expose_api("GET", "/settings", api_get_settings)
 web_ui.expose_api("GET", "/timezones", api_timezones)
+web_ui.expose_api("GET", "/llm", api_llm)
 web_ui.expose_api("POST", "/settings", api_set_settings)
 web_ui.expose_api("GET", "/preview", api_preview)
 web_ui.expose_api("POST", "/generate", api_generate)

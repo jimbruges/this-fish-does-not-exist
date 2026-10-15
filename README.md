@@ -106,7 +106,13 @@ Slicer screenshots: [front plate](3d-print/print-settings/front-plate.png), [rea
 
    <img src="images/app-lab-4-run-at-startup.png" alt="App Lab app menu with Run at startup switched on" width="450">
 
-5. Run the app. Open the web UI on port 7000 to pick the layout (`page` for the portrait frame) and the generation interval.
+5. Download the language model. The app writes its descriptions with **Gemma 3 1B** (722 MB), which App Lab downloads once and then runs on the device. In the app's left panel, under **Bricks**, open **Large Language Model (LLM)**, go to the **AI models** tab, and click **Download** next to Gemma 3 1B. When it shows **Installed** and **Model in use**, you're set. The UNO Q needs an internet connection for this one-off download.
+
+   <img src="images/app-lab-5-llm-model.png" alt="App Lab Large Language Model brick, AI models tab, with Gemma 3 1B installed and in use" width="600">
+
+   Without the model, the app still works: it falls back to descriptions built from the fish's own traits, which still read as textbook prose.
+
+6. Run the app. Open the web UI on port 7000 to pick the layout (`page` for the portrait frame) and the generation interval.
 
 The app saves its settings and fish count to `.fishclock_state.json` on the device, so it picks up where it left off after a restart.
 

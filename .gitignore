@@ -13,3 +13,6 @@ __pycache__/
 
 # Full-resolution photos (resized copies live in images/)
 _originals/
+
+# Arduino Project Hub write-up (not for the repo)
+projecthub.md

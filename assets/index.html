@@ -22,6 +22,11 @@
   input[type=number], select { width:110px; background:#0d1117; color:#e6edf3;
           border:1px solid #30363d; border-radius:6px; padding:6px 8px; }
   select { width:auto; max-width:270px; }
+  textarea { width:100%; box-sizing:border-box; margin-top:6px; resize:vertical;
+             background:#0d1117; color:#e6edf3; border:1px solid #30363d;
+             border-radius:6px; padding:8px;
+             font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  label:has(textarea) { display:block; flex-direction:column; align-items:stretch; }
   button { background:#006d77; color:#fff; border:0; border-radius:6px; padding:10px 16px;
            font-size:14px; cursor:pointer; }
   button:disabled { opacity:.5; cursor:not-allowed; }
@@ -94,6 +99,20 @@
       Saving a smaller value raises it to this.
     </p>
     <div class="row"><button id="save">Save settings</button></div>
+  </section>
+
+  <section class="wide">
+    <h2>Language model</h2>
+    <p style="font-size:13px;color:#8b949e;margin:0 0 10px">
+      Source <span id="src2" class="pill">—</span>
+      <span id="llmerr" class="err" style="display:inline"></span>
+    </p>
+    <label style="display:block">Prompt sent to the model
+      <textarea id="llm_prompt" rows="7" readonly></textarea></label>
+    <label style="display:block">Raw reply
+      <textarea id="llm_raw" rows="7" readonly></textarea></label>
+    <label style="display:block">Text as printed (cleaned &amp; trimmed to fit)
+      <textarea id="llm_text" rows="5" readonly></textarea></label>
   </section>
 
   <section class="wide">

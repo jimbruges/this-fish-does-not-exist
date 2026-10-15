@@ -21,6 +21,27 @@ LLM_TIMEOUT_S = 75
 _llm = None
 _llm_failed = False
 
+# Last exchange with the model, surfaced in the web UI so the prompt and the
+# raw reply can be inspected without digging through logs.
+_exchange_lock = threading.Lock()
+_exchange = {
+    "prompt": "",
+    "raw": "",          # exactly what the model returned, before cleaning
+    "text": "",         # what actually got printed
+    "source": "",       # "llm" or "template"
+    "error": "",
+}
+
+
+def last_exchange():
+    with _exchange_lock:
+        return dict(_exchange)
+
+
+def _record(**fields):
+    with _exchange_lock:
+        _exchange.update(fields)
+
 # Folded into the user turn rather than passed as a system prompt: Gemma's
 # chat template has no system role and rejects one outright with
 # "Conversation roles must alternate user/assistant".
@@ -67,9 +88,11 @@ def _chat_with_timeout(llm, prompt, timeout):
     t.join(timeout)
     if t.is_alive():
         logger.warning("LLM did not answer within %ss; using template", timeout)
+        _record(error="timed out after %ss" % timeout)
         return None
     if "error" in result:
         logger.warning("LLM call failed (%s); using template", result["error"])
+        _record(error=str(result["error"]))
         return None
     return result.get("text")
 
@@ -88,9 +111,6 @@ def _clean(text, max_words):
 
 
 def from_llm(name, traits, max_words=110, timeout=LLM_TIMEOUT_S):
-    llm = _get_llm()
-    if llm is None:
-        return None
     prompt = PREAMBLE + (
         "Write two short paragraphs (about %d words total) for the entry on "
         "%s, a marine fish. Mention its habitat, depth range, diet and "
@@ -98,12 +118,23 @@ def from_llm(name, traits, max_words=110, timeout=LLM_TIMEOUT_S):
         "Write in formal taxonomic prose. Do not repeat the species name more "
         "than twice." % (max_words, name, _describe_traits(traits))
     )
+    # recorded before the call so the UI shows the prompt even while the model
+    # is still thinking, or if it never answers
+    _record(prompt=prompt, raw="", text="", source="", error="")
+
+    llm = _get_llm()
+    if llm is None:
+        _record(error="no local model available")
+        return None
+
     out = _chat_with_timeout(llm, prompt, timeout)
     if out is None:
         return None
+    _record(raw=out)
     cleaned = _clean(out, max_words)
     if len(cleaned.split()) < 25:
         logger.warning("LLM description too short (%r); using template", cleaned[:60])
+        _record(error="reply too short (%d words)" % len(cleaned.split()))
         return None
     return cleaned
 
@@ -183,10 +214,15 @@ def from_template(name, traits, seed=None):
 
 
 def describe(name, traits, use_llm=True, max_words=85):
-    """Fits the portrait page's body area (~12 justified lines)."""
-    """Returns (text, source) where source is "llm" or "template"."""
+    """Invent a description. Fits the portrait page's body area (~12 justified
+    lines). Returns (text, source) where source is "llm" or "template"."""
     if use_llm:
         text = from_llm(name, traits, max_words=max_words)
         if text:
+            _record(text=text, source="llm")
             return text, "llm"
-    return from_template(name, traits), "template"
+    else:
+        _record(prompt="", raw="", text="", source="", error="LLM disabled in settings")
+    text = from_template(name, traits)
+    _record(text=text, source="template")
+    return text, "template"
