@@ -127,3 +127,7 @@ Mozilla Public License 2.0, see [LICENSE](LICENSE).
 ## Credits
 
 Fish generation is ported from [fishdraw](https://github.com/LingDong-/fishdraw) by LingDong-.
+
+## Built with Agent Mode
+
+This app was built using [Agent Mode in Arduino App Lab](https://docs.arduino.cc/software/app-lab/integrations/agent-mode/).
