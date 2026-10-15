@@ -1,10 +1,10 @@
 # 🐟 This Fish Does Not Exist
 
-*An Encyclopedia of Fish That Never Were.*
+*A Journal of Spurious Fish.*
 
 An Arduino UNO Q app that draws procedurally generated fish stroke by stroke on a 7.5" e-paper display, laid out as textbook pages with scientific descriptions written by an on-device LLM.
 
-A new fish is generated every few minutes using the [fishdraw](https://github.com/LingDong-/fishdraw) algorithm and drawn on a Waveshare 7.5" e-paper panel (800×480) through the Arduino e-Paper Shield. The UNO Q's Linux side generates the fish, rasterizes it with PIL and streams only the changed bytes to the MCU, so fast partial refreshes reveal the drawing stroke by stroke.
+A new fish is generated at regular time intervals using the [fishdraw](https://github.com/LingDong-/fishdraw) algorithm and drawn on a Waveshare 7.5" e-paper panel (800×480) through the Arduino e-Paper Shield. The UNO Q's Linux side generates the fish, rasterizes it with PIL and streams only the changed bytes to the MCU, so fast partial refreshes can reveal the drawing stroke by stroke if desired. The [LLM Brick](https://github.com/arduino/app-bricks-py/tree/main/src/arduino/app_bricks/llm) can then prompted with the characteristics of the fish to generate a scientific description of the fish.
 
 ## Layouts
 
