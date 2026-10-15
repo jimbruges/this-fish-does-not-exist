@@ -4,6 +4,5 @@ ports:
 - 7000
 bricks:
 - arduino:web_ui: {}
-- arduino:llm:
-    model: llamacpp:gemma-3-1b-it-Q4_0
+- arduino:llm: {}
 icon: 🐟
