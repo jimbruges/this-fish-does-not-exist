@@ -1,0 +1,9 @@
+name: This Fish Does Not Exist
+description: "Procedurally generated fish (fishdraw algorithm) drawn stroke by stroke on a Waveshare 7.5\" e-paper panel as a textbook specimen plate, labelled figure, or portrait page, with an invented scientific description written by an on-device LLM."
+ports:
+- 7000
+bricks:
+- arduino:web_ui: {}
+- arduino:llm:
+    model: llamacpp:gemma-3-1b-it-Q4_0
+icon: 🐟

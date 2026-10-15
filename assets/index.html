@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>This Fish Does Not Exist</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;
+         background:#0e1116; color:#e6edf3; }
+  header { padding:18px 20px; background:#006d77; color:#fff; }
+  header h1 { margin:0; font-size:20px; }
+  header p { margin:4px 0 0; opacity:.9; font-size:13px; }
+  main { max-width:900px; margin:0 auto; padding:20px; display:grid; gap:18px;
+         grid-template-columns:1fr; }
+  @media(min-width:760px){ main{ grid-template-columns:1fr 1fr; } .wide{ grid-column:1/-1; } }
+  section { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:16px; }
+  h2 { margin:0 0 12px; font-size:15px; text-transform:uppercase; letter-spacing:.06em;
+       color:#8b949e; }
+  label { display:flex; justify-content:space-between; align-items:center; gap:10px;
+          margin:8px 0; font-size:14px; }
+  input[type=number], select { width:110px; background:#0d1117; color:#e6edf3;
+          border:1px solid #30363d; border-radius:6px; padding:6px 8px; }
+  select { width:auto; max-width:270px; }
+  button { background:#006d77; color:#fff; border:0; border-radius:6px; padding:10px 16px;
+           font-size:14px; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  .pill { display:inline-block; padding:3px 10px; border-radius:99px; font-size:12px;
+          background:#30363d; }
+  .pill.ready { background:#1f6f3d; } .pill.busy { background:#8a6d1f; }
+  .pill.error { background:#8a1f1f; }
+  img#preview { width:100%; image-rendering:pixelated; background:#fff; border-radius:6px; }
+  .name { font-size:17px; font-style:italic; }
+  ol { padding-left:20px; } li { margin:6px 0; }
+  code { background:#0d1117; padding:1px 5px; border-radius:4px; }
+  .err { color:#ff7b72; font-size:13px; min-height:18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🐟 This Fish Does Not Exist</h1>
+  <p>A new specimen every interval, drawn stroke-by-stroke on a 7.5" e-paper panel</p>
+</header>
+
+<main>
+  <section>
+    <h2>Status</h2>
+    <p>State <span id="st" class="pill">…</span></p>
+    <p>Specimens catalogued: <strong id="count">0</strong></p>
+    <p class="name" id="name">—</p>
+    <p>Discovered <span id="when">—</span></p>
+    <p>Description: <span id="src" class="pill">—</span></p>
+    <p class="err" id="err"></p>
+    <div class="row">
+      <button id="generate">Generate now</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Latest plate</h2>
+    <img id="preview" alt="no fish yet">
+  </section>
+
+  <section class="wide">
+    <h2>Layout &amp; timing</h2>
+    <label>Mode
+      <select id="mode">
+        <option value="page">Textbook page (portrait, LLM prose)</option>
+        <option value="figure">Labelled figure (landscape)</option>
+        <option value="plate">Specimen plate (landscape)</option>
+      </select>
+    </label>
+    <label title="Off: each finished page appears in a single refresh instead of being drawn on progressively. Much shorter periods are possible.">
+      Draw progressively <input type="checkbox" id="progressive"></label>
+    <label title="Page mode only. Uses the local LLM to invent a species description. Off (or if no model is installed) falls back to a built-in template.">
+      Write prose with local LLM <input type="checkbox" id="use_llm"></label>
+    <label title="Page mode only. Flip the portrait page 180 degrees if the panel is mounted the other way up.">
+      Flip portrait 180° <input type="checkbox" id="portrait_flip"></label>
+    <label title="IANA timezone name used for the 'First recorded' timestamp. Leave blank to use the board's local time.">
+      Timezone
+      <input type="text" id="timezone" list="tzlist" placeholder="local" style="width:190px">
+    </label>
+    <datalist id="tzlist"></datalist>
+    <p style="font-size:13px;color:#8b949e;margin:0 0 8px">
+      Clock now reads: <strong id="now">—</strong>
+    </p>
+    <label>New fish every (seconds) <input type="number" id="generate_interval_s" step="5" min="30"></label>
+    <label>Draw duration (seconds) <input type="number" id="draw_duration_s" step="1" min="2"></label>
+    <label title="Scales the partial-refresh waveform. Lower = faster, smoother reveal but fainter strokes and more ghosting. Higher = darker but chunkier.">
+      Stroke darkness vs speed <input type="number" id="waveform" step="0.1" min="0.3" max="3"></label>
+    <p style="font-size:13px;color:#8b949e;margin:10px 0 0">
+      Shortest period for these settings: <strong id="minint">—</strong>s.
+      Saving a smaller value raises it to this.
+    </p>
+    <div class="row"><button id="save">Save settings</button></div>
+  </section>
+
+  <section class="wide">
+    <h2>How it works</h2>
+    <ol>
+      <li>Every <em>generate interval</em>, a new fish is procedurally generated
+          (ported from <a href="https://github.com/LingDong-/fishdraw" style="color:#7ee787">fishdraw</a>)
+          along with a scientific-sounding binomial name.</li>
+      <li>It's laid out as one of three textbook designs. <strong>Textbook
+          page</strong> is portrait, with a figure, caption, classification
+          line and an invented species description written by the on-board
+          LLM, typed out word by word. <strong>Labelled figure</strong> and
+          <strong>specimen plate</strong> are landscape and need no LLM.
+          Page furniture — headings, captions, the name and date — is drawn
+          first so it stays readable while the fish is still appearing.</li>
+      <li>The panel is cleared with a single full refresh, then the fish is
+          drawn on stroke by stroke across the <em>draw duration</em> using
+          fast partial refreshes, so it builds up without the screen
+          flashing again. The name and discovery date/time land with the
+          last few strokes.</li>
+      <li>By default <em>draw progressively</em> is off, so each finished page
+          appears in a single refresh every 120&nbsp;s. Turn it on to watch the
+          page being drawn — but a partial refresh costs about 0.6&nbsp;s, so a
+          smooth reveal needs a draw duration of minutes, and the period has to
+          grow to fit it.</li>
+      <li>This page mirrors the same image the panel shows — check it here if
+          you don't have the board in view.</li>
+    </ol>
+    <p><strong>API:</strong> <code>GET /status</code>, <code>GET|POST /settings</code>,
+      <code>GET /preview</code>, <code>POST /generate</code>.</p>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

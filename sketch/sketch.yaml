@@ -1,0 +1,11 @@
+profiles:
+  default:
+    fqbn: 
+    platforms:
+      - platform: arduino:zephyr
+    libraries:
+      - dependency: Adafruit BusIO (1.17.4)
+      - dependency: Adafruit GFX Library (1.12.6)
+      - GxEPD2 (1.6.9)
+
+default_profile: default

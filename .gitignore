@@ -1,0 +1,9 @@
+# ignore app cache folder
+.cache/
+
+# Python
+__pycache__/
+*.pyc
+
+# Runtime state saved by the app on the device
+.fishclock_state.json
